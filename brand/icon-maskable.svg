@@ -1,0 +1,8 @@
+<!-- Full-bleed variant for PWA "maskable" icons. The background covers the
+     whole canvas so any mask shape has something to crop to; the road is
+     inset so the part that identifies it survives a circular crop. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Road Track">
+  <rect width="48" height="48" fill="#FD8024"/>
+  <path d="M21.6 18h4.8L38 48H10z" fill="#2D2D2D"/>
+  <path d="M24 24.5v21" stroke="#FD8024" stroke-width="2.8" stroke-dasharray="4 3.5"/>
+</svg>

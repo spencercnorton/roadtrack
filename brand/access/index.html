@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Access - Road Track</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+<!-- Upstream's own bundles, so this inherits the app look and the Road Track
+     theme already appended to site.css. -->
+<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap-icons.css">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="../metrics/metrics.css?v=__RT_VERSION__">
+<link rel="stylesheet" href="access.css?v=__RT_VERSION__">
+
+<script>
+    /* Stamped before first paint so a dark-mode visit never flashes light.
+       ?theme= overrides the system setting and is remembered. */
+    (function () {
+        var q = new URLSearchParams(location.search).get('theme');
+        var stored = null;
+        try { stored = localStorage.getItem('rt-theme'); } catch (e) { /* private mode */ }
+        if (q === 'dark' || q === 'light') {
+            try { localStorage.setItem('rt-theme', q); } catch (e) { /* ignore */ }
+        }
+        var theme = q || stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    })();
+</script>
+</head>
+
+<body>
+<div class="rt-metrics">
+<div class="container-fluid px-3 px-lg-4">
+
+    <header class="rt-head">
+        <img src="/brand/icon.svg" alt="">
+        <h1>Access</h1>
+        <a class="btn btn-sm btn-outline-primary rt-back" href="/">
+            <i class="bi bi-arrow-left me-1"></i>Garage
+        </a>
+    </header>
+
+    <!-- THE GATE IS THE DATA, NOT THIS URL.
+         /brand/ is served by UseStaticFiles with no auth in front of it, so
+         anyone who can reach the host can fetch this shell. Every call the
+         page makes is administrator-only server-side (see access.js), so a
+         non-admin gets the notice below and an empty page. Do not add anything
+         here that is worth reading before the user list has come back. -->
+    <div id="rt-state" class="rt-empty">Loading…</div>
+
+    <div id="rt-body" hidden>
+        <p class="rt-note rt-lede" id="rt-lede"></p>
+
+        <p class="rt-note rt-scope" id="rt-scope"></p>
+
+        <div class="rt-access-error" id="rt-error" role="alert" hidden></div>
+
+        <section class="rt-card">
+            <div class="rt-card-head">
+                <h2 class="rt-card-title">Who sees which vehicle</h2>
+                <span class="rt-card-note" id="rt-grid-note"></span>
+            </div>
+            <div class="rt-access-wrap">
+                <table class="rt-access" id="rt-grid"></table>
+            </div>
+            <p class="rt-note" id="rt-grid-foot"></p>
+        </section>
+
+        <section class="rt-card">
+            <div class="rt-card-head">
+                <h2 class="rt-card-title">Accounts</h2>
+                <span class="rt-card-note">
+                    With OpenID Connect sign-in the email is the join — the
+                    provider’s id_token address has to match it exactly or the
+                    login is refused
+                </span>
+            </div>
+            <div class="rt-access-wrap">
+                <table class="rt-access" id="rt-users"></table>
+            </div>
+        </section>
+    </div>
+
+</div>
+</div>
+
+<script type="module" src="access.js?v=__RT_VERSION__"></script>
+</body>
+</html>

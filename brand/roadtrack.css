@@ -1,0 +1,519 @@
+/* ── Road Track — NorviTech theme ────────────────────────────────────
+   Recolours LubeLogger's Bootstrap 5.3 accent from its default blue to the
+   NorviTech brand orange.
+
+     brand   #FD8024      on-brand text  #1A1A1A
+     chrome  #2D2D2D      light surface  #FFFFFF
+
+   Appended to wwwroot/css/site.css at image build time, so it lands after
+   Bootstrap and after LubeLogger's own rules. Every selector below exists
+   because that exact selector hardcodes the blue upstream — this is a
+   recolour, not a restyle.
+   ─────────────────────────────────────────────────────────────────── */
+
+:root,
+[data-bs-theme="light"] {
+    --bs-primary: #FD8024;
+    --bs-primary-rgb: 253, 128, 36;
+    --bs-primary-bg-subtle: #FFEEE1;
+    --bs-primary-border-subtle: #FEC9A2;
+    --bs-primary-text-emphasis: #8A4109;
+    /* Links sit on white, so they use a darkened brand tone that clears
+       WCAG AA 4.5:1 — the raw brand orange does not. See tools/check.py. */
+    --bs-link-color: #A64E0B;
+    --bs-link-color-rgb: 166, 78, 11;
+    --bs-link-hover-color: #7F3B08;
+    --bs-link-hover-color-rgb: 127, 59, 8;
+    --bs-focus-ring-color: rgba(253, 128, 36, 0.35);
+}
+
+[data-bs-theme="dark"] {
+    --bs-primary: #FD8024;
+    --bs-primary-rgb: 253, 128, 36;
+    --bs-primary-bg-subtle: #3A1D08;
+    --bs-primary-border-subtle: #96500F;
+    --bs-primary-text-emphasis: #FEB784;
+    --bs-link-color: #FD8024;
+    --bs-link-color-rgb: 253, 128, 36;
+    --bs-link-hover-color: #FEB784;
+    --bs-link-hover-color-rgb: 254, 183, 132;
+    --bs-focus-ring-color: rgba(253, 128, 36, 0.35);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+
+.btn-primary {
+    --bs-btn-color: #1A1A1A;
+    --bs-btn-bg: #FD8024;
+    --bs-btn-border-color: #FD8024;
+    --bs-btn-hover-color: #1A1A1A;
+    --bs-btn-hover-bg: #E5701A;
+    --bs-btn-hover-border-color: #E5701A;
+    --bs-btn-focus-shadow-rgb: 253, 128, 36;
+    --bs-btn-active-color: #FFFFFF;
+    --bs-btn-active-bg: #C25A0F;
+    --bs-btn-active-border-color: #C25A0F;
+    --bs-btn-disabled-color: #1A1A1A;
+    --bs-btn-disabled-bg: #FD8024;
+    --bs-btn-disabled-border-color: #FD8024;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #A64E0B;
+    --bs-btn-border-color: #FD8024;
+    --bs-btn-hover-color: #1A1A1A;
+    --bs-btn-hover-bg: #FD8024;
+    --bs-btn-hover-border-color: #FD8024;
+    --bs-btn-focus-shadow-rgb: 253, 128, 36;
+    --bs-btn-active-color: #1A1A1A;
+    --bs-btn-active-bg: #FD8024;
+    --bs-btn-active-border-color: #FD8024;
+    --bs-btn-disabled-color: #A64E0B;
+    --bs-btn-disabled-border-color: #FD8024;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+    --bs-btn-color: #FD8024;
+    --bs-btn-disabled-color: #FD8024;
+}
+
+/* LubeLogger uses .btn-warning as a general accent-action class, not as a
+   semantic warning: of ~20 uses, only "Revoke Password" and admin "Reset
+   Password" are actually cautionary. The rest are Login, Register, Request,
+   Manage API Keys, Test SMTP Settings, Add Field, Move Selected...
+   Left at Bootstrap's amber it puts a second, clashing orange next to the
+   brand one — most visibly as the primary CTA on the login page. Unify it.
+   Destructive actions keep .btn-danger red, which is the real signal. */
+.btn-warning {
+    --bs-btn-color: #1A1A1A;
+    --bs-btn-bg: #FD8024;
+    --bs-btn-border-color: #FD8024;
+    --bs-btn-hover-color: #1A1A1A;
+    --bs-btn-hover-bg: #E5701A;
+    --bs-btn-hover-border-color: #E5701A;
+    --bs-btn-focus-shadow-rgb: 253, 128, 36;
+    --bs-btn-active-color: #FFFFFF;
+    --bs-btn-active-bg: #C25A0F;
+    --bs-btn-active-border-color: #C25A0F;
+    --bs-btn-disabled-color: #1A1A1A;
+    --bs-btn-disabled-bg: #FD8024;
+    --bs-btn-disabled-border-color: #FD8024;
+}
+
+/* ── Form controls ───────────────────────────────────────────────── */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #FEC08A;
+    box-shadow: 0 0 0 0.25rem rgba(253, 128, 36, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #FD8024;
+    border-color: #FD8024;
+}
+
+.form-check-input[type="checkbox"]:indeterminate {
+    background-color: #FD8024;
+    border-color: #FD8024;
+}
+
+.form-check-input:focus {
+    border-color: #FEC08A;
+    box-shadow: 0 0 0 0.25rem rgba(253, 128, 36, 0.25);
+}
+
+.form-range::-webkit-slider-thumb {
+    background-color: #FD8024;
+}
+
+.form-range::-moz-range-thumb {
+    background-color: #FD8024;
+}
+
+/* ── Components whose accent lives in a component-scoped custom prop ── */
+
+.accordion {
+    --bs-accordion-btn-focus-border-color: #FEC08A;
+    --bs-accordion-active-color: #8A4109;
+    --bs-accordion-active-bg: #FFEEE1;
+}
+
+[data-bs-theme="dark"] .accordion {
+    --bs-accordion-active-color: #FEB784;
+    --bs-accordion-active-bg: #3A1D08;
+}
+
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: #FD8024;
+    --bs-dropdown-link-active-color: #1A1A1A;
+}
+
+.list-group {
+    --bs-list-group-active-bg: #FD8024;
+    --bs-list-group-active-border-color: #FD8024;
+    --bs-list-group-active-color: #1A1A1A;
+}
+
+.nav-pills {
+    --bs-nav-pills-link-active-bg: #FD8024;
+    --bs-nav-pills-link-active-color: #1A1A1A;
+}
+
+.pagination {
+    --bs-pagination-active-bg: #FD8024;
+    --bs-pagination-active-border-color: #FD8024;
+    --bs-pagination-active-color: #1A1A1A;
+    --bs-pagination-focus-color: #7F3B08;
+    --bs-pagination-focus-bg: #FFEEE1;
+}
+
+.progress,
+.progress-stacked {
+    --bs-progress-bar-bg: #FD8024;
+}
+
+/* ── LubeLogger's own site.css hardcodes these five ───────────────── */
+
+/* site.css: focus ring on buttons and inputs (was #258cfb) */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #FD8024;
+}
+
+/* site.css: active dropdown item (was #0d6efd) */
+.btn-check:checked + .dropdown-item,
+:not(.btn-check) + .dropdown-item:active {
+    color: #1A1A1A;
+    background-color: #FD8024;
+}
+
+/* site.css: active item in the mobile nav drawer (was #6ea8fe) */
+.lubelogger-mobile-nav > ul > li > .nav-link.active {
+    color: #FD8024;
+}
+
+/* site.css: selected vehicle card in the garage (was #6ea8fe) */
+.garage-item.garage-active .card {
+    border-color: #FD8024;
+}
+
+/* site.css: selected span of the dual range slider (was #0d6efd) */
+.dual-range-highlight {
+    background: #FD8024;
+}
+
+/* ── SweetAlert2 confirm button (was #7066e0) ─────────────────────────
+   sweetalert2.min.css loads after site.css, so this needs two classes on
+   an element selector to out-specify it rather than !important — upstream
+   wraps its own selector in :where(), which contributes no specificity. */
+button.swal2-styled.swal2-confirm {
+    background-color: #FD8024;
+    color: #1A1A1A;
+}
+
+/* ── The garage, as a wall of posters ─────────────────────────────────
+   Upstream renders each vehicle as a Bootstrap card: a 145px-tall photo
+   band with year / make / model / plate stacked underneath in plain text.
+   It is functional and it reads like a database listing.
+
+   This restyles the same DOM into a poster — full-bleed photograph, a
+   gradient scrim, and the identity set over the bottom of the image — so
+   the landing page leads with the cars rather than with their metadata.
+   No markup is changed: every selector below targets what LubeLogger
+   already emits, which is why this survives an upstream bump.
+
+   Scoped to #garageContainer throughout. `.card` is Bootstrap's, used all
+   over the app; none of this may leak past the garage. */
+
+/* The photo carries an inline `height:145px` from upstream's Razor, so the
+   override has to be !important — there is no lower-specificity way past a
+   style attribute. Everything else here wins on specificity alone. */
+#garageContainer .garage-item .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* Cars are photographed landscape; a portrait poster would letterbox
+       every one of them. */
+    aspect-ratio: 4 / 3;
+    border: 0;
+    border-radius: .9rem;
+    overflow: hidden;
+    background: #1A1A1A;   /* shows through before the image decodes */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .16), 0 6px 18px rgba(0, 0, 0, .12);
+    transition: transform .25s cubic-bezier(.2, .7, .3, 1),
+                box-shadow .25s cubic-bezier(.2, .7, .3, 1);
+}
+
+#garageContainer .garage-item .card > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100% !important;
+    object-fit: cover;
+    /* Slower than the lift: the card should feel like it moves and the
+       photograph like it breathes, not both snapping together. */
+    transition: transform .6s cubic-bezier(.2, .7, .3, 1);
+}
+
+/* The scrim. Weighted to the bottom third so the text has something to sit
+   on without dimming the whole photograph. */
+#garageContainer .garage-item .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top,
+        rgba(0, 0, 0, .88) 0%,
+        rgba(0, 0, 0, .62) 26%,
+        rgba(0, 0, 0, .12) 55%,
+        rgba(0, 0, 0, 0) 78%);
+    transition: opacity .25s ease;
+}
+
+#garageContainer .garage-item .card-body {
+    position: relative;   /* above the ::after scrim */
+    z-index: 1;
+    /* Bootstrap gives .card-body `flex: 1 1 auto`, which makes it fill the
+       whole poster so the text starts at the TOP — over the bright part of
+       the photograph, with the scrim uselessly behind the empty space below
+       it. Shrink it to its content and the card's justify-content:flex-end
+       drops it onto the scrim where it belongs. */
+    flex: 0 0 auto;
+    padding: 1rem 1.15rem 1.05rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Year — the smallest thing on the card, and the only coloured one. */
+#garageContainer .garage-item .garage-item-year {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #FFA05C;   /* brand orange lifted for contrast on the scrim */
+    margin-bottom: .1rem;
+}
+
+/* Make above model, both white, with the model carrying the weight. Kept as
+   separate block elements rather than run together on one line: upstream
+   puts `.text-truncate` on each, and truncation needs a block box. */
+#garageContainer .garage-item .card-body h5:first-of-type {
+    font-size: .82rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .78);
+    margin: 0;
+    max-width: 100%;
+}
+
+#garageContainer .garage-item .card-body h5:last-of-type {
+    font-size: 1.45rem;
+    font-weight: 650;
+    line-height: 1.15;
+    color: #fff;
+    margin: .05rem 0 0;
+    max-width: 100%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+}
+
+/* Plate — a badge, because it is an identifier rather than prose. */
+#garageContainer .garage-item .card-body small:not(.garage-item-year) {
+    margin-top: .55rem;
+    padding: .16rem .5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .7rem;
+    letter-spacing: .09em;
+    color: rgba(255, 255, 255, .92);
+    border: 1px solid rgba(255, 255, 255, .38);
+    border-radius: .3rem;
+    max-width: 100%;
+}
+
+/* Hover: the card lifts, the photograph pushes in slightly behind it. */
+@media (hover: hover) {
+    #garageContainer .garage-item:hover .card {
+        transform: translateY(-4px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .18), 0 16px 34px rgba(0, 0, 0, .22);
+    }
+    #garageContainer .garage-item:hover .card > img { transform: scale(1.06); }
+    #garageContainer .garage-item:hover .card::after { opacity: .88; }
+}
+
+/* Selection ring. Upstream marks a selected vehicle with `border-color`,
+   which these cards no longer have — without this, ctrl-clicking to
+   multi-select would produce no visible feedback at all. */
+#garageContainer .garage-item.garage-active .card {
+    box-shadow: 0 0 0 3px #FD8024, 0 8px 22px rgba(0, 0, 0, .22);
+}
+
+/* Keyboard focus has to be visible on a card that is otherwise a div with
+   an onclick — upstream provides no focus style here. */
+#garageContainer .garage-item:focus-visible {
+    outline: none;
+}
+#garageContainer .garage-item:focus-visible .card {
+    box-shadow: 0 0 0 3px #FD8024, 0 8px 22px rgba(0, 0, 0, .22);
+}
+
+/* The add tile keeps its dashed outline but takes the poster's proportions,
+   so the grid stays on one rhythm. Both dimensions are inline styles
+   upstream, hence the !important pair. */
+#garageContainer .garage-item-add .card {
+    aspect-ratio: 4 / 3;
+    height: auto !important;
+    min-height: 0 !important;
+    border-radius: .9rem;
+    border-width: 2px;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+@media (hover: hover) {
+    #garageContainer .garage-item-add .card:hover {
+        border-color: #FD8024;
+        background-color: rgba(253, 128, 36, .06);
+    }
+}
+
+/* ── Arrival ──────────────────────────────────────────────────────────
+   The garage is fetched over AJAX and injected, so the cards animate the
+   moment they land. Staggered by a few tens of milliseconds each: enough
+   to read as a deal of cards, short enough that the last one is settled
+   well inside a third of a second. */
+@keyframes rt-poster-in {
+    from { opacity: 0; transform: translateY(16px) scale(.985); }
+    to   { opacity: 1; transform: none; }
+}
+
+#garageContainer .garage-item,
+#garageContainer .garage-item-add {
+    animation: rt-poster-in .42s cubic-bezier(.2, .7, .3, 1) both;
+}
+
+#garageContainer .vehiclesContainer > :nth-child(1) { animation-delay: 0ms; }
+#garageContainer .vehiclesContainer > :nth-child(2) { animation-delay: 45ms; }
+#garageContainer .vehiclesContainer > :nth-child(3) { animation-delay: 90ms; }
+#garageContainer .vehiclesContainer > :nth-child(4) { animation-delay: 135ms; }
+#garageContainer .vehiclesContainer > :nth-child(5) { animation-delay: 180ms; }
+#garageContainer .vehiclesContainer > :nth-child(6) { animation-delay: 225ms; }
+#garageContainer .vehiclesContainer > :nth-child(7) { animation-delay: 270ms; }
+#garageContainer .vehiclesContainer > :nth-child(8) { animation-delay: 315ms; }
+/* Past eight the stagger stops growing — a large garage should not take a
+   second and a half to finish appearing. */
+#garageContainer .vehiclesContainer > :nth-child(n + 9) { animation-delay: 340ms; }
+
+@media (prefers-reduced-motion: reduce) {
+    #garageContainer .garage-item,
+    #garageContainer .garage-item-add,
+    #garageContainer .garage-item .card,
+    #garageContainer .garage-item .card > img,
+    #garageContainer .garage-item .card::after,
+    #garageContainer .garage-item-add .card {
+        animation: none !important;
+        transition: none !important;
+    }
+    #garageContainer .garage-item:hover .card { transform: none; }
+    #garageContainer .garage-item:hover .card > img { transform: none; }
+}
+
+/* ── Landing page: Calendar tab ───────────────────────────────────────
+   Hidden rather than removed — it is upstream's tab, and this is a
+   COPY-only branding layer with no Razor to edit. The id is duplicated
+   across the desktop nav, the overflow dropdown and the mobile nav, so
+   this is an attribute selector rather than #id, which matches only the
+   first. The Metrics tab is ours and is simply not injected here; see
+   roadtrack-ui.js. */
+li:has(> [id="calendar-tab"]),
+[id="calendar-tab"] {
+    display: none !important;
+}
+
+/* ── Household: removed from the UI ───────────────────────────────────
+   LubeLogger models sharing TWICE — Collaborator (user ↔ vehicle) and
+   Household (parent user ↔ child users, with its own View/Edit/Delete
+   grades). Two overlapping answers to "who can see this car" is one more
+   than a shared garage needs. Collaborators does the same job in one
+   concept, and it has a tab of its own on every vehicle.
+
+   Safe to hide only while no account has household members. Existing
+   households still count: FilterUserVehicles resolves household parents
+   server-side whether or not this control is visible, so a household set
+   up earlier keeps granting access with this control no longer there to
+   show it — see the Collaborators section of docs/user-guide.md.
+
+   Both navigations, as ever: this control appears in the account dropdown
+   AND in the phone menu, and upstream copies nothing between them. Matched
+   on the onclick because these buttons carry no id at all — and hiding the
+   <li> as well as the button keeps the dropdown from showing a blank row.
+
+   Non-root only; root never had the entry. */
+li:has(> button[onclick="showHouseholdModal()"]),
+button[onclick="showHouseholdModal()"] {
+    display: none !important;
+}
+
+/* ── Collaborators tab ────────────────────────────────────────────────
+   The panel is upstream's own, lifted out of the dashboard partial into a
+   pane of its own (roadtrack-ui.js). It arrives wearing Bootstrap grid
+   classes meant for a .row, which are stripped; this gives it back the
+   breathing room the other tab panes get from their own partials. */
+.rt-collab-pane {
+    padding: 1rem 0.25rem;
+    max-width: 46rem;
+}
+
+/* ── Purchase / finance fields in the vehicle modal ───────────────────
+   The Finance tab's inputs live in upstream's "Purchase/Sold Information"
+   accordion, added as extra fields by roadtrack-ui.js. Styled HERE and not
+   in metrics.css because that sheet is injected on demand by the dashboard
+   — the "Add vehicle" modal opens from the garage, where nothing has asked
+   for it, so a rule living there would apply to the edit form and not to
+   the add form. Bootstrap's .form-text already supplies the muted colour. */
+.rt-purchase-field + .form-text {
+    margin-bottom: 0.6rem;
+}
+
+.rt-purchase-lead {
+    margin-top: 0.75rem;
+    font-style: italic;
+}
+
+/* ── Add a receipt ────────────────────────────────────────────────────
+   The fixed button roadtrack-ui.js appends to <body> on the garage and on
+   every vehicle page. Bottom-right, where a thumb rests on a phone; the
+   inset clears the iPhone home indicator. Under the modal backdrop (1050)
+   and the phone menu (2000), so it never floats over either. Colour comes
+   from .btn-primary above — nothing here names the brand. */
+#rt-receipt {
+    position: fixed;
+    right: 1rem;
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    z-index: 1030;
+}
+
+#rt-receipt > .btn {
+    padding: 0.6rem 1.1rem;
+    font-weight: 600;
+}
+
+/* Never wider than the screen: at 375px the mailbox address line ran 9px
+   past the edge. Items wrap instead — the heading is the vehicle's year,
+   make and model as typed, and Bootstrap would clip a long one to a line. */
+#rt-receipt .dropdown-menu {
+    min-width: 17rem;
+    max-width: calc(100vw - 2rem);
+}
+
+#rt-receipt .dropdown-header,
+#rt-receipt .dropdown-item {
+    white-space: normal;
+}
+
+@media print {
+    #rt-receipt { display: none; }
+}

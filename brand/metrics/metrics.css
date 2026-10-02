@@ -1,0 +1,542 @@
+/* ── Road Track — Metrics ─────────────────────────────────────────────
+   Layered on top of Bootstrap 5.3 + the Road Track theme already appended to
+   site.css, so this file only adds what the dashboard itself needs. Theme
+   follows LubeLogger's own [data-bs-theme] stamp on <html>.
+
+   The --series-* slots are a VALIDATED categorical palette, not hand-picked:
+   the order (orange, blue, aqua, violet, magenta) is the colourblind-safety
+   mechanism. Both modes clear the lightness band, chroma floor, adjacent CVD
+   separation (worst ΔE 23.1 light / 16.0 dark, target ≥8) and the
+   normal-vision floor (24.0 / 19.7, floor ≥15) against these exact surfaces.
+   Light mode leaves aqua (2.82:1) and magenta (2.69:1) under 3:1, which is
+   legal ONLY because every value is also reachable in the table view — that
+   is the relief channel, so do not remove the table.
+
+   Re-order or re-step a slot and those results no longer hold. Re-check
+   every gate above in both modes — light against #ffffff, dark against
+   #212529 — before trusting the palette again.
+   ──────────────────────────────────────────────────────────────────── */
+
+.rt-metrics {
+    --surface:        #FFFFFF;
+    --page:           #F6F6F4;
+    --ink:            #0B0B0B;
+    --ink-2:          #52514E;
+    --ink-muted:      #6E6C66;
+    --grid:           #E1E0D9;
+    --axis:           #C3C2B7;
+    --hairline:       rgba(11, 11, 11, .12);
+
+    --series-1: #EB6834;  /* Fuel     */
+    --series-2: #2A78D6;  /* Service  */
+    --series-3: #1BAF7A;  /* Repairs  */
+    --series-4: #4A3AA7;  /* Upgrades */
+    --series-5: #E87BA4;  /* Taxes    */
+
+    --up-bad:   #C0392B;
+    --down-good:#006300;
+}
+
+[data-bs-theme="dark"] .rt-metrics {
+    --surface:        #212529;
+    --page:           #16191C;
+    --ink:            #FFFFFF;
+    --ink-2:          #C3C2B7;
+    --ink-muted:      #9A988F;
+    --grid:           #2C2C2A;
+    --axis:           #383835;
+    --hairline:       rgba(255, 255, 255, .12);
+
+    /* Same five hues, re-stepped for the dark surface — not an auto-flip. */
+    --series-1: #D95926;
+    --series-2: #3987E5;
+    --series-3: #199E70;
+    --series-4: #9085E9;
+    --series-5: #D55181;
+
+    --up-bad:   #E66767;
+    --down-good:#0CA30C;
+}
+
+.rt-metrics {
+    background: var(--page);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* ── Per-vehicle dashboard ──────────────────────────────────────────────
+   The same cards inside LubeLogger's own Dashboard tab rather than on a page
+   of our own, so the full-page framing has to come back off: the tab pane
+   already provides the page background, and a 100vh minimum inside it leaves
+   a screen of empty colour under the last card. */
+
+.rt-vdash {
+    background: transparent;
+    min-height: 0;
+    padding-bottom: 1rem;
+}
+
+.rt-vdash .rt-filters { margin-top: .75rem; }
+
+.rt-vdash-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+/* Upstream's own controls — search, printable report, attachment export and
+   collaborator management. Not metrics, but the Dashboard tab is the only
+   place they exist, so they keep a home here. */
+.rt-vdash-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.rt-vdash-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-content: start;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+
+.rt-head {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1rem 0 .25rem;
+}
+
+.rt-head img { height: 30px; width: auto; }
+
+.rt-head h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+}
+
+.rt-head .rt-back { margin-left: auto; }
+
+/* ── Filter row — ONE row, above everything it scopes ───────────────── */
+
+.rt-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem 1rem;
+    margin-bottom: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: .6rem;
+}
+
+.rt-filters .form-select { max-width: 22rem; }
+.rt-filters .rt-spacer { margin-left: auto; }
+
+.rt-range { display: inline-flex; gap: .25rem; flex-wrap: wrap; }
+
+.rt-range button {
+    border: 1px solid var(--hairline);
+    background: transparent;
+    color: var(--ink-2);
+    border-radius: .4rem;
+    padding: .25rem .7rem;
+    font-size: .8125rem;
+    line-height: 1.4;
+}
+
+.rt-range button:hover { border-color: var(--bs-primary); color: var(--ink); }
+
+.rt-range button[aria-pressed="true"] {
+    background: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #1A1A1A;
+    font-weight: 600;
+}
+
+/* ── Stat tiles ─────────────────────────────────────────────────────── */
+
+.rt-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.rt-tile {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: .6rem;
+    padding: 1rem 1.1rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.rt-tile-label {
+    font-size: .8125rem;
+    color: var(--ink-muted);
+    letter-spacing: .01em;
+}
+
+/* Proportional figures on purpose — tabular-nums makes a big number look
+   loose. Tabular is reserved for the table view and axis ticks. */
+.rt-tile-value {
+    font-size: 1.9rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: var(--ink);
+}
+
+.rt-tile.rt-hero .rt-tile-value { font-size: 2.9rem; }
+
+/* An inferred figure, marked as one. A leading "~" rather than a colour or an
+ * icon: the sub-line under every tile already spells out what was estimated
+ * and from what, so this only has to stop the number being READ as measured —
+ * and it survives a screenshot, a high-contrast theme and a colourblind
+ * reader, which a tint would not. */
+.rt-tile-value.rt-est::before {
+    content: "~";
+    opacity: 0.55;
+    margin-inline-end: 0.05em;
+}
+
+.rt-tile-sub {
+    font-size: .8125rem;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 1.25rem;
+}
+
+.rt-delta { font-weight: 600; }
+.rt-delta.is-up { color: var(--up-bad); }
+.rt-delta.is-down { color: var(--down-good); }
+
+/* Every Chart.js canvas on this page sits in a box with a DEFINITE height.
+   With maintainAspectRatio:false and an auto-height parent, Chart.js sizes the
+   canvas from the parent while the parent sizes from the canvas — the two
+   ratchet each other and the tile grows without bound (measured: 211,879px).
+   Same reason .rt-plot is fixed. */
+.rt-spark {
+    position: relative;
+    height: 34px;
+    margin-top: auto;
+    padding-top: .35rem;
+}
+
+/* ── Chart cards ────────────────────────────────────────────────────── */
+
+.rt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    gap: 1rem;
+}
+
+.rt-card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: .6rem;
+    padding: 1rem 1.1rem 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.rt-card-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: .5rem .75rem;
+    margin-bottom: .85rem;
+}
+
+.rt-card-title {
+    font-size: .95rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--ink);
+}
+
+.rt-card-note {
+    font-size: .8125rem;
+    color: var(--ink-muted);
+}
+
+.rt-card-head .rt-range { margin-left: auto; }
+
+/* Height includes the x-axis band, so axis labels are never cut off into a
+   nested scrollbar. */
+.rt-plot { position: relative; height: 320px; }
+.rt-plot-tall { height: 380px; }
+
+/* ── Legend (always present for ≥2 series) ──────────────────────────── */
+
+.rt-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem 1rem;
+    margin-top: .85rem;
+    font-size: .8125rem;
+    color: var(--ink-2);
+}
+
+.rt-legend button {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: none;
+    border: 0;
+    padding: .15rem .1rem;
+    color: inherit;
+    font: inherit;
+}
+
+.rt-legend .rt-swatch {
+    width: .7rem;
+    height: .7rem;
+    border-radius: .2rem;
+    flex: none;
+}
+
+.rt-legend button[aria-pressed="false"] { opacity: .4; }
+.rt-legend button[aria-pressed="false"] .rt-legend-name { text-decoration: line-through; }
+
+/* The Finance tab's legend is a caption, not a control — there is nothing to
+   filter on a two-line chart, and a button that only ever hides half of a
+   comparison is a worse chart one click away. */
+.rt-legend-static {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.rt-legend-static .rt-swatch {
+    width: .7rem;
+    height: .7rem;
+    border-radius: .2rem;
+    flex: none;
+}
+
+/* ── Biggest expenses ───────────────────────────────────────────────── */
+
+.rt-top {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.rt-top li {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+    padding: .5rem .1rem;
+    border-bottom: 1px solid var(--grid);
+}
+
+.rt-top li:last-child { border-bottom: 0; }
+
+.rt-top .rt-swatch {
+    width: .6rem;
+    height: .6rem;
+    border-radius: .2rem;
+    flex: none;
+    align-self: center;
+}
+
+.rt-top-desc {
+    flex: 1;
+    min-width: 0;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rt-top-meta {
+    font-size: .8125rem;
+    color: var(--ink-muted);
+    white-space: nowrap;
+}
+
+.rt-top-cost {
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ── Table view — the relief channel for the sub-3:1 light slots ────── */
+
+.rt-table-wrap { overflow-x: auto; }
+
+.rt-table {
+    width: 100%;
+    font-size: .8125rem;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.rt-table th,
+.rt-table td {
+    padding: .4rem .6rem;
+    border-bottom: 1px solid var(--grid);
+    text-align: right;
+    white-space: nowrap;
+    color: var(--ink-2);
+}
+
+.rt-table th:first-child,
+.rt-table td:first-child { text-align: left; }
+.rt-table thead th { color: var(--ink); font-weight: 600; }
+.rt-table tfoot td { font-weight: 600; color: var(--ink); border-bottom: 0; }
+
+.rt-th-key { display: inline-flex; align-items: center; gap: .4rem; }
+
+.rt-th-key .rt-swatch {
+    width: .6rem;
+    height: .6rem;
+    border-radius: .2rem;
+}
+
+/* ── States ─────────────────────────────────────────────────────────── */
+
+.rt-empty {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--ink-muted);
+}
+
+/* Hold the previous render at reduced opacity on refetch — no skeleton
+   flash, no layout jump. */
+.rt-metrics[data-busy="true"] .rt-refreshes { opacity: .45; transition: opacity .15s; }
+
+.rt-note {
+    font-size: .8125rem;
+    color: var(--ink-muted);
+    margin-top: .5rem;
+}
+
+/* ── Phones ─────────────────────────────────────────────────────────────
+   Originally this file had no breakpoint at all. It did not LOOK broken on
+   a phone, which is why it survived: every grid here is `auto-fit minmax()`,
+   so each one degrades to a single column on its own and nothing overlaps.
+
+   What it degrades to is the problem. Measured on a 390px viewport, the
+   vehicle dashboard put five stat tiles in a column — 640px, most of two
+   screens — above the first chart, so the page opened on a wall of numbers
+   with no picture in sight. The tiles are the smallest thing on the page and
+   were taking the most room.
+
+   So: tiles two-up (the hero keeps the full width, it is the headline), charts
+   shorter and squarer, and the control rows swiped rather than wrapped. 600px
+   rather than a Bootstrap breakpoint because that is where a 13rem tile stops
+   fitting two to a row, which is the thing actually being decided. */
+@media (max-width: 600px) {
+    .rt-kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .6rem;
+        margin-bottom: .6rem;
+    }
+
+    .rt-tile { padding: .7rem .8rem .65rem; }
+    .rt-tile-value { font-size: 1.45rem; }
+
+    /* The headline figure keeps the full width and its size — halving the one
+       number people open the page for would be a strange thing to do for room. */
+    .rt-tile.rt-hero { grid-column: 1 / -1; }
+    .rt-tile.rt-hero .rt-tile-value { font-size: 2.2rem; }
+
+    /* Two-up tiles are half as wide, and a sub-line like "Across 48 months
+       since Jan 2022" needs to wrap rather than be clipped. */
+    .rt-tile-sub {
+        display: block;
+        font-size: .75rem;
+        line-height: 1.3;
+    }
+
+    .rt-tile-sub .rt-delta { display: inline; }
+
+    /* 320px of chart on a 300px-wide plot is a portrait box for a time series.
+       Squarer reads better and gets the next card into view. */
+    .rt-plot { height: 240px; }
+    .rt-plot-tall { height: 280px; }
+
+    .rt-card { padding: .8rem .85rem .9rem; margin-bottom: .6rem; }
+    .rt-card-head { margin-bottom: .6rem; }
+
+    /* Wrapping a 4-button group onto two rows costs a whole row of height and
+       makes the row's height depend on the label text. Swipe them instead —
+       and keep the scroll off the card, which must not clip its own chart. */
+    .rt-range {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .rt-range::-webkit-scrollbar { display: none; }
+    .rt-range button { flex: none; }
+
+    /* The mode buttons sit under the title rather than beside it: at this width
+       `margin-left:auto` leaves them alone on a line anyway, and this way they
+       start at the left edge where a thumb reaches them. */
+    .rt-card-head .rt-range { margin-left: 0; width: 100%; }
+
+    .rt-filters {
+        padding: .6rem .7rem;
+        gap: .5rem;
+        margin-bottom: .8rem;
+    }
+
+    .rt-filters .form-select { max-width: none; width: 100%; }
+    .rt-filters .rt-spacer { display: none; }
+
+    .rt-head { padding: .75rem 0 .25rem; }
+    .rt-head h1 { font-size: 1.1rem; }
+
+    /* Description and amount on one line, the date underneath: at 390px the
+       three-column row squeezed every description down to an ellipsis. */
+    .rt-top li { flex-wrap: wrap; row-gap: .15rem; }
+    .rt-top-desc { flex: 1 1 60%; white-space: normal; }
+    .rt-top-meta { flex: 1 1 100%; padding-left: 1.2rem; }
+}
+
+/* ── Finance tab ────────────────────────────────────────────────────── */
+
+/* Two columns of label/value, not the dashboard's wide monthly grid. */
+.rt-finance .rt-table th[scope="row"] { width: 55%; font-weight: 500; }
+.rt-finance .rt-table td { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* The "nothing recorded yet" panel. NOT styled as an error: it is the state
+   every vehicle starts in, and it is a list of what to type. */
+.rt-finance-empty {
+    text-align: left;
+    max-width: 46rem;
+    color: var(--ink-2);
+}
+
+.rt-finance-empty .rt-finance-lead {
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.rt-finance-empty ul { margin: .5rem 0 .85rem 1.1rem; }
+.rt-finance-empty li { margin-bottom: .25rem; }
+.rt-finance-empty strong { color: var(--ink); }
+
+@media print {
+    .rt-filters, .rt-back { display: none; }
+    .rt-card { break-inside: avoid; border-color: #999; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rt-metrics * { transition: none !important; animation: none !important; }
+}

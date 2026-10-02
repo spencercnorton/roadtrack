@@ -1,0 +1,8 @@
+# The image is upstream's plus these files from this repository; nothing else
+# belongs in the build context.
+*
+!brand/
+!docker/
+!VERSION
+!LICENSE
+!NOTICE

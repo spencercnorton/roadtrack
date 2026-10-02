@@ -1,0 +1,80 @@
+# Checks on every pull request and on main: the brand assets, the metrics maths,
+# the entrypoint's settings, the build guards, and an image built and started on
+# both architectures it is published for. No secrets, read-only token,
+# GitHub-owned actions pinned by commit.
+name: CI
+on:
+  workflow_call:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - name: Brand assets
+        run: python3 tools/check.py
+      - name: Metrics maths
+        run: node tools/test_metrics.mjs
+      - name: Entrypoint settings
+        run: sh tools/test_entrypoint.sh
+      - name: Syntax
+        run: |
+          python3 -m py_compile tools/*.py scripts/*.py
+          for f in brand/roadtrack-ui.js tools/live-preview.mjs; do node --check "$f"; done
+          for f in brand/metrics/*.js brand/reports/*.js brand/access/*.js; do
+            node --input-type=module --check < "$f"
+          done
+          bash -n docker/entrypoint.sh
+          for f in tools/*.sh; do sh -n "$f"; done
+  build-guard:
+    name: build-guard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: The build fails when upstream moves a file the brand layer extends
+        run: sh tools/test_build_guard.sh
+  image-amd64:
+    name: image (amd64)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build, start and probe the image
+        run: sh tools/smoke_test.sh
+  image-arm64:
+    name: image (arm64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build, start and probe the image
+        run: sh tools/smoke_test.sh

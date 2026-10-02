@@ -1,0 +1,123 @@
+/* Road Track — Access grid.
+ *
+ * Layered on metrics.css, which already carries the card, header, tile and
+ * table language this page reuses. Only what a users x vehicles grid needs
+ * that a month x category table did not is here.
+ */
+
+.rt-lede {
+    margin: 0 0 1rem;
+    max-width: 60ch;
+}
+
+/* The grid grows with the number of accounts, so it scrolls sideways rather
+   than squeezing the vehicle name to nothing. Same mechanism as the metrics
+   table view. */
+.rt-access-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.rt-access {
+    border-collapse: collapse;
+    font-size: .8125rem;
+    width: 100%;
+}
+
+.rt-access th,
+.rt-access td {
+    padding: .5rem .7rem;
+    border-bottom: 1px solid var(--grid);
+    text-align: center;
+    white-space: nowrap;
+    color: var(--ink-2);
+}
+
+/* The vehicle name is the row's label and the only cell anyone reads as prose,
+   so it is the one that stays left and is allowed to be the widest thing. */
+.rt-access th[scope="row"],
+.rt-access thead th:first-child {
+    text-align: left;
+    color: var(--ink);
+    font-weight: 600;
+    /* Held against the left edge while the user columns scroll under it —
+       without this the vehicle name scrolls out of view and the ticks stop
+       meaning anything. */
+    position: sticky;
+    left: 0;
+    background: var(--surface);
+}
+
+.rt-access thead th {
+    color: var(--ink);
+    font-weight: 600;
+    vertical-align: bottom;
+}
+
+.rt-access tbody tr:last-child th,
+.rt-access tbody tr:last-child td { border-bottom: 0; }
+
+.rt-access-user { display: block; }
+
+.rt-access-badge {
+    display: block;
+    font-size: .6875rem;
+    font-weight: 400;
+    color: var(--ink-muted);
+}
+
+.rt-access-email { color: var(--ink-muted); }
+
+/* The one cell that is a list rather than a value. Left aligned and wrapping,
+   because a comma-separated list of vehicle names is prose and nowrap would
+   make it set the width of the whole table on its own. */
+.rt-access-vehicles {
+    text-align: left;
+    white-space: normal;
+    min-width: 11rem;
+}
+
+/* Inherited-from-a-household access. Deliberately NOT a checkbox: this one is
+   not editable here, and a control that looks the same as the editable ones
+   but silently does nothing is worse than a plain mark. */
+.rt-access-inherited {
+    color: var(--ink-muted);
+    font-size: 1rem;
+    cursor: help;
+}
+
+/* Scope caveat. Sits above the grid rather than under it, because it changes
+   how the whole table should be read. */
+.rt-scope {
+    margin: 0 0 1rem;
+    max-width: 70ch;
+}
+
+.rt-access-error {
+    margin-bottom: 1rem;
+    padding: .7rem .85rem;
+    border: 1px solid var(--up-bad);
+    border-radius: .6rem;
+    color: var(--up-bad);
+    font-size: .8125rem;
+    background: var(--surface);
+}
+
+/* Bigger than Bootstrap's default: this is the only control on the page and
+   on a phone it is a touch target. */
+.rt-access input[type="checkbox"] {
+    width: 1.15rem;
+    height: 1.15rem;
+    cursor: pointer;
+}
+
+.rt-access input[type="checkbox"]:disabled { opacity: .5; }
+
+@media (max-width: 600px) {
+    .rt-access th,
+    .rt-access td { padding: .45rem .5rem; }
+
+    /* Second column of the Accounts table is an email address, which has no
+       break opportunity and would otherwise set the table's width on its own. */
+    .rt-access-email { white-space: normal; word-break: break-all; }
+}

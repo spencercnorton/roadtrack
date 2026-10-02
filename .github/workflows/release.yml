@@ -1,0 +1,106 @@
+# A `vX.Y.Z` tag on main publishes ghcr.io/spencercnorton/roadtrack:vX.Y.Z for
+# amd64 and arm64, each built on its own architecture, moves `latest` to it, and
+# creates the GitHub Release from the CHANGELOG entry. Release images are never
+# rebuilt: a tag that already exists in the registry fails the run.
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+  privacy:
+    uses: ./.github/workflows/privacy.yml
+    permissions:
+      contents: read
+  prove:
+    name: Prove stable tag and source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: The tag is a stable version, on main, matching VERSION and CHANGELOG
+        run: |
+          printf '%s\n' "$RELEASE_TAG" | grep -Eq '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+          git merge-base --is-ancestor HEAD origin/main
+          test "$RELEASE_TAG" = "v$(tr -d '[:space:]' < VERSION)"
+          grep -q "^## ${RELEASE_TAG#v} " CHANGELOG.md
+  publish-amd64:
+    name: Publish (amd64)
+    needs: [checks, privacy, prove]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      REGISTRY_TOKEN: ${{ github.token }}
+      ARCH: amd64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and push this architecture's half
+        run: sh tools/release_image.sh arch
+  publish-arm64:
+    name: Publish (arm64)
+    needs: [checks, privacy, prove]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      REGISTRY_TOKEN: ${{ github.token }}
+      ARCH: arm64
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and push this architecture's half
+        run: sh tools/release_image.sh arch
+  release:
+    name: Release
+    needs: [publish-amd64, publish-arm64]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      REGISTRY_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Join both halves under the release tag and latest
+        run: sh tools/release_image.sh join
+      - name: Publish the release
+        run: |
+          version="${RELEASE_TAG#v}"
+          awk -v h="## $version " 'index($0, h) == 1 {on = 1; next} on && /^## / {exit} on' CHANGELOG.md > notes.md
+          test -s notes.md
+          mkdir -p release-assets
+          cp IMAGE_DIGEST.txt release-assets/
+          git archive --format=tar.gz --prefix="roadtrack-$version/" HEAD > "release-assets/roadtrack-$version.tar.gz"
+          (cd release-assets && sha256sum * > SHA256SUMS.txt)
+          gh release create "$RELEASE_TAG" release-assets/* \
+            --verify-tag --title "Road Track $version" --notes-file notes.md

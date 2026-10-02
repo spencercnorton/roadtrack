@@ -1,0 +1,30 @@
+name: Bug report
+description: A page, a chart, a figure or a tab does the wrong thing, or shows the wrong number.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Before pasting anything, remove hostnames, user names, e-mail addresses, licence plates and anything else that identifies a person or a vehicle. Never paste a cookie, an API key or an OpenID Connect secret. If a wrong figure is the problem, made-up numbers that reproduce it are better than real ones.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what happened instead.
+      placeholder: The cost per mile tile shows a figure ten times higher than the chart beneath it.
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Setup
+      description: The Road Track image tag, the browser and device, and whether it happens in light mode, dark mode or both.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Browser console or container log
+      description: Any error from the browser console (lines starting "Road Track") or from `docker logs`, scrubbed.
+      render: text

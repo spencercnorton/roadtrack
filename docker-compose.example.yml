@@ -1,0 +1,37 @@
+# A minimal Road Track instance. Copy it to docker-compose.yml, adjust, and run
+# `docker compose up -d`; then open http://localhost:8080.
+#
+# Every setting is documented in docs/configuration.md.
+services:
+  roadtrack:
+    # `latest` is the newest release. Pin a release tag (e.g. :v2.0.0) to
+    # upgrade on your own schedule; release images never change.
+    image: ghcr.io/spencercnorton/roadtrack:latest
+    restart: unless-stopped
+    init: true
+    ports:
+      - "8080:8080"
+    volumes:
+      # LubeLogger's data: the database, documents, images and settings.
+      - data:/App/data
+      # The keys that sign sign-in cookies. Without this volume every new
+      # container (an upgrade, a recreate) signs everybody out.
+      - keys:/root/.aspnet/DataProtection-Keys
+    environment:
+      TZ: Etc/UTC
+      LUBELOGGER_LOGO_URL: /brand/logo.svg
+      LUBELOGGER_LOGO_SMALL_URL: /brand/icon.svg
+      # Without a locale, money renders with the generic currency sign "¤".
+      LUBELOGGER_LOCALE_OVERRIDE: en-US
+      # The public address, when the instance sits behind a reverse proxy.
+      # LUBELOGGER_DOMAIN: https://roadtrack.example.com
+      #
+      # Optional: the "Add a receipt" button, for an instance whose operator
+      # runs something that files receipts from Telegram or e-mail.
+      # ROADTRACK_RECEIPT_TELEGRAM_BOT: examplereceiptbot
+      # ROADTRACK_RECEIPT_TELEGRAM_NAME: Receipt Bot
+      # ROADTRACK_RECEIPT_EMAIL: receipts@example.com
+
+volumes:
+  data:
+  keys:

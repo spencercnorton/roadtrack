@@ -1,0 +1,261 @@
+/* Road Track — reports tab.
+ *
+ * Two audiences in one stylesheet: the preview inside the app (themed, dark
+ * mode included) and the printed page (always ink on white, because a dark
+ * theme printed at 100% coverage is a cartridge nobody asked to spend).
+ *
+ * The print half styles `.rt-rep-sheet` wherever it lands, because printing
+ * goes through upstream's `printContainer()`, which moves a COPY of the sheet
+ * into `.stickerPrintContainer` and reveals it with its own showOnPrint /
+ * hideOnPrint classes. Anything scoped to the tab pane would style the preview
+ * and leave the printout bare.
+ */
+
+/* ── Controls (screen only) ─────────────────────────────────────────── */
+
+.rt-rep-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 0.25rem;
+}
+
+.rt-rep-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex: 1 1 24rem;
+}
+
+.rt-rep-type {
+    flex: 1 1 12rem;
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--bs-border-color, #ccc);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.rt-rep-type:hover { border-color: var(--rt-accent, #c8102e); }
+
+.rt-rep-type.is-on {
+    border-color: var(--rt-accent, #c8102e);
+    box-shadow: inset 0 0 0 1px var(--rt-accent, #c8102e);
+}
+
+.rt-rep-type-label { display: block; font-weight: 600; }
+
+.rt-rep-type-blurb {
+    display: block;
+    font-size: 0.8125rem;
+    opacity: 0.72;
+    margin-top: 0.15rem;
+}
+
+.rt-rep-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Sized to its longest option so the row does not reflow when the choice
+   changes, and `auto` width would otherwise stretch it across the flex row. */
+.rt-rep-sort select {
+    width: auto;
+    min-width: 11.5rem;
+}
+
+.rt-rep-sort[hidden] { display: none; }
+
+.rt-rep-status, .rt-rep-empty { opacity: 0.75; padding: 0.5rem 0.25rem; }
+
+/* ── The sheet ──────────────────────────────────────────────────────── */
+
+.rt-rep-sheet {
+    max-width: 60rem;
+    padding: 1.25rem;
+    border: 1px solid var(--bs-border-color, #ddd);
+    border-radius: 0.5rem;
+}
+
+.rt-rep-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 2px solid var(--rt-accent, #c8102e);
+}
+
+.rt-rep-brand { display: flex; align-items: center; gap: 0.5rem; }
+.rt-rep-logo { width: 2.25rem; height: 2.25rem; }
+.rt-rep-wordmark { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.01em; }
+
+.rt-rep-meta { margin-left: auto; text-align: right; }
+.rt-rep-title { font-size: 1.25rem; margin: 0; }
+.rt-rep-vehicle { margin: 0.1rem 0 0; font-weight: 600; }
+.rt-rep-range { margin: 0.1rem 0 0; font-size: 0.8125rem; opacity: 0.75; }
+
+.rt-rep-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 1rem 0 1.25rem;
+}
+
+.rt-rep-figure { display: flex; flex-direction: column; }
+.rt-rep-figure-value { font-size: 1.35rem; font-weight: 700; line-height: 1.1; }
+.rt-rep-figure-label { font-size: 0.78125rem; opacity: 0.72; }
+
+.rt-rep-h3 {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    margin: 1.5rem 0 0.5rem;
+}
+
+.rt-rep-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.rt-rep-table th,
+.rt-rep-table td {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--bs-border-color, #e3e3e3);
+    vertical-align: top;
+}
+
+.rt-rep-table th {
+    font-weight: 600;
+    border-bottom-width: 2px;
+    white-space: nowrap;
+}
+
+/* Money and mileage are columns of digits: right-aligned so the magnitudes
+   line up, and never wrapped mid-figure. Marked per cell by the renderer —
+   nth-child would have to be recomputed every time the price toggle removes a
+   column. */
+.rt-rep-table .rt-rep-num { text-align: right; white-space: nowrap; }
+
+.rt-rep-foot {
+    margin-top: 1.25rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--bs-border-color, #e3e3e3);
+    font-size: 0.78125rem;
+    opacity: 0.72;
+}
+
+.rt-rep-foot:empty { display: none; }
+
+/* ── Phones ─────────────────────────────────────────────────────────── */
+
+/* Same breakpoint and the same reasoning as metrics.css: 600px is where a
+ * 12rem report button stops fitting two to a row, which is the thing actually
+ * being decided, not a framework's number.
+ *
+ * Measured at 390x844 with the mobile nav hidden — i.e. what production looks
+ * like, not what the fixture looks like: the controls were 394px tall, the
+ * sheet began at y=526, and the FIRST TABLE ROW sat at y=766. Two thirds of a
+ * phone screen spent choosing a report before any of it is visible. The
+ * picker's three buttons alone were 276px of that, stacked one per row at 87px
+ * each, because `flex: 1 1 12rem` cannot fit two into 382px.
+ *
+ * `screen and`, deliberately. Printing goes through upstream's printContainer()
+ * and the README's whole claim for it is that a phone can produce the same
+ * handout as a desktop. Without the media type these rules also match a phone's
+ * print context, and the sheet would come out with tighter cells and a smaller
+ * table font than the identical report printed from a laptop — a difference in
+ * the artefact that depends on the device that made it.
+ */
+@media screen and (max-width: 600px) {
+    .rt-rep-controls {
+        padding: .6rem .25rem;
+        gap: .5rem;
+    }
+
+    /* Swiped, not wrapped — the same trade metrics.css makes for its range
+       group. Three buttons on one line, the third half-visible at the edge so
+       the row reads as scrollable rather than as a truncated list. */
+    .rt-rep-types {
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .rt-rep-types::-webkit-scrollbar { display: none; }
+
+    .rt-rep-type {
+        flex: 0 0 auto;
+        padding: .45rem .7rem;
+    }
+
+    /* The blurb explains a choice that is one tap to just make and see. It is
+       also what made each button 87px tall, which is the whole problem — three
+       of them cost more screen than the report they are choosing between. */
+    .rt-rep-type-blurb { display: none; }
+
+    /* Full width so the label is not truncated to fit beside the checkbox, and
+       so both controls are reachable at the left edge where a thumb is. */
+    .rt-rep-sort, .rt-rep-sort select { width: 100%; }
+    .rt-rep-sort select { min-width: 0; }
+
+    /* 20px of padding each side is 10% of a 390px screen, spent on a border. */
+    .rt-rep-sheet { padding: .8rem .85rem .9rem; }
+
+    /* The header is brand-left / meta-right and `nowrap`, which at 360px puts
+       302px of content into 318px. It has not clipped yet; it is one longer
+       vehicle name from doing so. Let it wrap and drop the right-alignment,
+       which means nothing once it is on its own line. */
+    .rt-rep-head { flex-wrap: wrap; gap: .5rem; }
+    .rt-rep-meta { margin-left: 0; text-align: left; }
+
+    .rt-rep-summary { gap: .9rem; margin: .8rem 0 1rem; }
+    .rt-rep-h3 { margin: 1.1rem 0 .4rem; }
+    .rt-rep-table { font-size: .8125rem; }
+    .rt-rep-table th, .rt-rep-table td { padding: .35rem .4rem; }
+}
+
+/* ── Print ──────────────────────────────────────────────────────────── */
+
+@media print {
+    /* Ink on white regardless of the app's theme, and edge-to-edge: the page
+       margin is the printer's job, not a border's. */
+    .rt-rep-sheet {
+        max-width: none;
+        border: 0;
+        padding: 0;
+        color: #000;
+        background: #fff;
+    }
+
+    .rt-rep-controls { display: none !important; }
+
+    .rt-rep-head { border-bottom-color: #000; }
+    .rt-rep-range, .rt-rep-figure-label, .rt-rep-foot, .rt-rep-h3 { opacity: 1; }
+    .rt-rep-range, .rt-rep-foot { color: #333; }
+
+    .rt-rep-table th,
+    .rt-rep-table td { border-bottom-color: #999; }
+
+    /* Repeat the column headings on every sheet. A maintenance history is
+       routinely twenty pages, and page four of unlabelled columns is the
+       reason printed reports get thrown away. */
+    .rt-rep-table thead { display: table-header-group; }
+    .rt-rep-table tr { page-break-inside: avoid; break-inside: avoid; }
+
+    /* Never leave a section heading stranded at the foot of a page. */
+    .rt-rep-h3 { page-break-after: avoid; break-after: avoid; }
+    .rt-rep-head { page-break-after: avoid; break-after: avoid; }
+
+    @page { margin: 14mm; }
+}

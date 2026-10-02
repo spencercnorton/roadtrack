@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="Road Track">
+  <defs><clipPath id="rt-tile"><rect width="48" height="48" rx="11"/></clipPath></defs>
+  <g clip-path="url(#rt-tile)">
+    <rect width="48" height="48" fill="#FD8024"/>
+    <!-- The road runs off the bottom edge on purpose: bounded inside the tile
+         the same shape reads as a traffic cone. -->
+    <path d="M20.8 14h6.4L44 48H4z" fill="#2D2D2D"/>
+    <path d="M24 22v24" stroke="#FD8024" stroke-width="3.6" stroke-dasharray="5 4.5"/>
+  </g>
+</svg>

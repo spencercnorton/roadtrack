@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest a figure, a report or a change to how Road Track shows what a car costs.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you are trying to find out or do, and why Road Track or LubeLogger gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose

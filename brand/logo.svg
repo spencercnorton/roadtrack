@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 48" width="204" height="48" role="img" aria-label="Road Track">
+  <defs><clipPath id="rt-tile"><rect width="48" height="48" rx="11"/></clipPath></defs>
+  <g transform="translate(0 4) scale(0.8333)" clip-path="url(#rt-tile)">
+    <rect width="48" height="48" fill="#FD8024"/>
+    <path d="M20.8 14h6.4L44 48H4z" fill="#2D2D2D"/>
+    <path d="M24 22v24" stroke="#FD8024" stroke-width="3.6" stroke-dasharray="5 4.5"/>
+  </g>
+  <!-- The wordmark is brand orange on both light and dark surfaces. LubeLogger
+       serves one logo file for every theme, so a colour that only works on one
+       background would break the other.
+       Deliberately live text, not outlined paths — the exact typeface varies
+       by client, but textLength pins the wordmark to 146px so it can never
+       clip. Convert to paths only if a client ever renders it wrong. -->
+  <text x="48" y="33" textLength="146" lengthAdjust="spacingAndGlyphs"
+        font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+        font-size="25" fill="#FD8024"><tspan font-weight="700">Road</tspan><tspan font-weight="300" dx="7">Track</tspan></text>
+</svg>
