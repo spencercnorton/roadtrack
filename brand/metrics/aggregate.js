@@ -1378,6 +1378,10 @@ export function paidAt(loan, date = new Date()) {
  * line is only ever as good as what is in the box, and drawing it plainly says
  * so.
  */
+/* $ £ € ¥ ₹, then optional space, before an amount. */
+const CURRENCY = '(?:[$\\u00a3\\u20ac\\u00a5\\u20b9]\\s*)?';
+const BARE_AMOUNT = new RegExp('^\\s*' + CURRENCY + '\\d[\\d.,\\s\\u00a0\\u202f]*$');
+
 export function valuationsOf(vehicle) {
     if (!vehicle) return [];
     const out = [];
@@ -1392,7 +1396,14 @@ export function valuationsOf(vehicle) {
      * whatever sits between them, comma or not, is simply skipped, and so is
      * any prose typed around them. */
     const text = String(extraField(vehicle, VALUATION_FIELD) ?? '');
-    const entry = /(\d{4})(?:-(\d{1,2}))?(?:-(\d{1,2}))?\s*[=:]\s*([\d.,]+)/g;
+    /* The amount may carry a currency sign, and its thousands may be grouped
+     * with spaces (or the no-break spaces a phone keyboard inserts), as people
+     * write money. A space group is exactly three digits and must not run into
+     * a digit, so "12 000 2026-01 = 10000" stops before the next entry's year
+     * instead of reading it as more of the amount. */
+    const entry = new RegExp(
+        '(\\d{4})(?:-(\\d{1,2}))?(?:-(\\d{1,2}))?\\s*[=:]\\s*' + CURRENCY
+        + '(\\d{1,3}(?:[ \\u00a0\\u202f]\\d{3}(?!\\d))+(?:\\.\\d+)?|[\\d.,]+)', 'g');
     let m;
     let dated = 0;
     while ((m = entry.exec(text)) !== null) {
@@ -1410,8 +1421,11 @@ export function valuationsOf(vehicle) {
         out.push({ date, value: round2(value), source: 'stated' });
     }
     /* A bare number with no date at all is "what it is worth now" — the shape
-     * somebody types the first time, before they think of it as a series. */
-    const bare = dated ? null : typedNumber(text);
+     * somebody types the first time, before they think of it as a series.
+     * Only a box that IS one number, though: read as a whole, an entry that
+     * failed to parse ("2024-06 = abc") would come out as the date's own
+     * digits, 2024, dated today. */
+    const bare = dated || !BARE_AMOUNT.test(text) ? null : typedNumber(text);
     if (bare !== null && bare >= 0) {
         out.push({ date: new Date(), value: round2(bare), source: 'stated' });
     }

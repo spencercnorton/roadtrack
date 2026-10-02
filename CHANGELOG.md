@@ -5,6 +5,18 @@ Every release's entry here is also its GitHub Release notes. Versions follow
 
 ## Unreleased
 
+## 2.0.1 — 2026-10-02
+
+### Fixed
+
+- **Estimated values with a currency sign or spaced thousands.** An entry such as
+  `2024-06 = $12,000` or `2024-06 = 12 000` was dropped or read as 12. Both now
+  read as 12,000, and a space-grouped amount stops before the next entry's year.
+- **A valuation that does not parse is skipped, not invented.** When no entry in
+  the box parsed, the whole box was read as one "worth this today" figure, so
+  `2024-06 = abc` became a valuation of 2,024 dated today. Only a box holding
+  nothing but a number is read that way now.
+
 ## 2.0.0 — 2026-10-02
 
 The first public release. Road Track has been in daily use on a private
