@@ -94,10 +94,11 @@ whatever the locale, so `2,5` reads as 25. A negative value counts as none.
 
 **Estimated values** is a list of `date = amount` entries. The date is
 `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (a missing month or day means January or
-the 1st), and `:` works in place of `=`. The amount is digits, with commas
-allowed as thousands separators. A currency symbol, space or minus sign
-breaks the entry, so `2024-06 = $12000` and `2024-06 = 12 000` are both
-misread. Text between entries is skipped, a lone number with no date means
+the 1st), and `:` works in place of `=`. The amount is digits, optionally
+after a currency sign (`$`, `£`, `€`, `¥` or `₹`), with commas or spaces as
+thousands separators, so `2024-06 = $12,000` and `2024-06 = 12 000` both read
+as 12,000. An entry whose amount is negative or written in words is skipped.
+Text between entries is skipped, a box holding nothing but a number means
 "worth this today", and if a date appears twice the later entry wins. The
 purchase and sale prices, on their dates, are added as the first and last
 points automatically.

@@ -1484,6 +1484,25 @@ check('junk in the valuations box is dropped, not turned into a number', () => {
                      'the impossible month and the prose are both gone');
 });
 
+check('a currency sign or spaced thousands do not break a valuation', () => {
+    const points = valuationsOf(vehicleWith({ [VALUATION_FIELD]:
+        '2023-06 = $12,000, 2024-06 = \u00a311 500, 2025-06 = \u20ac10\u00a0500 2026-01 = 10000' }));
+    assert.deepEqual(points.map((p) => p.value), [20000, 12000, 11500, 10500, 10000],
+                     "spaced thousands stop before the next entry's year");
+});
+
+check('an entry that does not parse never becomes "worth this now"', () => {
+    // The fallback reads the whole box as one number. It used to read each of
+    // these as 2,024 (the date's own digits) dated today.
+    for (const text of ['2024-06 = abc', '2024-06 = -5000', '2024-06 = twelve thousand']) {
+        const points = valuationsOf(vehicleWith({ [VALUATION_FIELD]: text }));
+        assert.deepEqual(points.map((p) => p.source), ['bought'], text);
+    }
+    // A genuinely bare figure, currency sign and all, still is one.
+    const bare = valuationsOf(vehicleWith({ [VALUATION_FIELD]: ' $9,500 ' }));
+    assert.deepEqual(bare.map((p) => p.value), [20000, 9500]);
+});
+
 check('valueAt interpolates between points, holds after, and is null before', () => {
     const points = valuationsOf(vehicleWith({ [VALUATION_FIELD]: '2023-05 = 10000' }));
     assert.equal(valueAt(points, parseIsoDate('2019-01-01')), null);
