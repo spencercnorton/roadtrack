@@ -19,6 +19,10 @@ The Road Track icon and logo (brand/icon.svg, brand/icon-maskable.svg,
 brand/logo.svg and the rasters generated from them) were drawn for this
 project and are licensed with the rest of the repository.
 
+The screenshots in docs/assets/ were captured from a Road Track instance
+holding only the synthetic records that tools/preview.py generates, and are
+licensed with the rest of the repository.
+
 Data
 ----
 The per-model depreciation curves in brand/metrics/aggregate.js are residual
