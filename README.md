@@ -18,6 +18,15 @@
   <a href="https://buy.stripe.com/8x26oH2U44f65TRe574wM04"><img alt="Donate" src="https://img.shields.io/badge/donate-Stripe-635bff.svg?logo=stripe&logoColor=white"></a>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/dashboard-dark.png">
+    <img src="docs/assets/dashboard-light.png" width="900" alt="The Road Track dashboard for one vehicle, showing total spend, the last twelve months against the year before, cost per month and per mile, distance covered, and a cost-of-ownership chart of running spend, what has been paid for the car and what it is worth.">
+  </picture>
+  <br>
+  <sub>Demonstration data from the project's preview fixtures, not a real vehicle.</sub>
+</p>
+
 Road Track turns [LubeLogger](https://github.com/hargata/lubelog) — a self-hosted
 tracker for vehicle maintenance, fuel and records — into a picture of what each car
 costs to own: per month, per mile, by system, and including the loan. It is for
