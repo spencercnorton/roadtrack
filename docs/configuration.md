@@ -10,7 +10,7 @@ starting point.
 |---|---|
 | Image | `ghcr.io/spencercnorton/roadtrack`, for `linux/amd64` and `linux/arm64` |
 | Tags | one per release (`v2.0.0`, …), never rebuilt; `latest` is the newest release |
-| Built on | `ghcr.io/hargata/lubelogger` at the release's `LUBELOGGER_VERSION` (v1.7.0 for 2.0.0) |
+| Built on | `ghcr.io/hargata/lubelogger` at the release's `LUBELOGGER_VERSION` (v1.7.3 since 2.1.0; v1.7.0 for 2.0.x) |
 | Port | `8080`, plain HTTP |
 
 | Volume | Holds | Without it |
@@ -123,7 +123,7 @@ Road Track therefore loses them.
 ## Caching proxies and CDNs
 
 Road Track appends to `/css/site.css` and `/js/shared.js`, which LubeLogger
-requests with its own version in the query string (`?v=1.7.0`) and serves
+requests with its own version in the query string (`?v=1.7.3`) and serves
 with no `Cache-Control`. The URL changes with LubeLogger, not with Road Track,
 so a cache that picks its own lifetime (hours, on some CDNs) can keep serving
 the previous release after an upgrade, even to a private window.

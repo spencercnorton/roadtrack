@@ -597,7 +597,7 @@ def page(html):
 
 
 ROUTES = {
-    "/api/info": lambda: {"locale": "en-US", "currentVersion": "1.7.0",
+    "/api/info": lambda: {"locale": "en-US", "currentVersion": "1.7.3",
                           "currencySymbol": "$", "decimalSeparator": ".",
                           "dateFormat": "M/d/yyyy"},
     "/api/vehicles": lambda: VEHICLES,
