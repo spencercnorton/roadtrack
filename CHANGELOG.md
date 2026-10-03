@@ -5,6 +5,47 @@ Every release's entry here is also its GitHub Release notes. Versions follow
 
 ## Unreleased
 
+## 2.1.0 — 2026-10-02
+
+Built on LubeLogger v1.7.3 (was v1.7.0). Back up `/App/data` first: going back
+to Road Track 2.0.x, and so to LubeLogger 1.7.0, with the same data is not
+supported.
+
+### Security
+
+LubeLogger 1.7.1 fixed three access-control flaws, each reachable by a
+signed-in user:
+
+- [GHSA-c7rp-fp3h-h3vv](https://github.com/hargata/lubelog/security/advisories/GHSA-c7rp-fp3h-h3vv)
+  (high): supply records of a vehicle the user has no access to could be
+  modified through their id.
+- [GHSA-qw92-hqxv-2x9g](https://github.com/hargata/lubelog/security/advisories/GHSA-qw92-hqxv-2x9g)
+  (medium): supply records could be read through a plan template's id.
+- [GHSA-9xp6-9ch3-qqmj](https://github.com/hargata/lubelog/security/advisories/GHSA-9xp6-9ch3-qqmj)
+  (medium): another user's odometer records could be copied onto one's own
+  vehicle.
+
+The advisories list LubeLogger 1.6.8 and earlier, but 1.7.0, which Road Track
+2.0.x is built on, does not carry the fixes either.
+
+### Changed, from LubeLogger
+
+- Settings has a new layout ("your settings have moved"), with two new
+  options: dialogs that a stray click outside does not close, and notes that
+  wrap in record lists instead of being cut short.
+- A refused API request answers `403` rather than `401`. A request with no
+  credentials still answers `401`.
+- Images, documents and temporary files are served by the app, behind its
+  sign-in, instead of as static files. API keys are accepted under `/api`,
+  `/kiosk`, `/images`, `/documents` and now `/temp`.
+- Vehicle image tags can be combined with `and` / `or`.
+
+### Fixed
+
+- **The About sentence in Settings now says Road Track.** The rewrite ran once,
+  when the page loaded, and LubeLogger fills the Settings tab after that, so it
+  never applied. It now runs whenever the tab is filled.
+
 ## 2.0.1 — 2026-10-02
 
 ### Fixed

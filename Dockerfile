@@ -7,7 +7,7 @@
 # static files and a small entrypoint.
 #
 # Bumping upstream: change LUBELOGGER_VERSION, nothing else.
-ARG LUBELOGGER_VERSION=v1.7.0
+ARG LUBELOGGER_VERSION=v1.7.3
 # Overridable ONLY so tools/test_build_guard.sh can rebuild THIS Dockerfile —
 # not a copy of it — against a deliberately broken base, and prove the BRAND
 # GUARD checks below actually fail it. Nothing in the pipeline sets this.

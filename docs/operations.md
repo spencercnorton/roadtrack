@@ -83,7 +83,8 @@ In the browser, a Road Track tab that fails to load logs an error prefixed
 LubeLogger signs people in through OpenID Connect with its
 [`OpenIDConfig__*` settings](configuration.md#environment-variables), but its
 "disable regular login" flag alone does not make that the only way in. The
-behaviour below is LubeLogger 1.7.0's, read from its source.
+behaviour below is LubeLogger 1.7.3's, read from its source (unchanged since
+1.7.0, except that a refused API request now answers 403 rather than 401).
 
 **What the flag does.** `OpenIDConfig__DisableRegularLogin=true` sends
 `/Login`, and the registration and password-reset pages, straight to the
@@ -136,7 +137,7 @@ LubeLogger.
 5. Strip the `Authorization` header from every request
    (`proxy_set_header Authorization "";`). Integrations should use API keys
    (`x-api-key`), which LubeLogger accepts only under `/api`, `/kiosk`,
-   `/images` and `/documents`.
+   `/images`, `/documents` and `/temp`.
 6. Test from outside. The first command must print 403, not 200; the second,
    with a working local username and password, must print 401:
 

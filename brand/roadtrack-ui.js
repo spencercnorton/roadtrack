@@ -33,10 +33,13 @@
         if (meta && meta.content === 'LubeLogger') meta.content = 'Road Track';
     }
 
-    /* _Settings.cshtml:362, inside the Settings tab. Text node only, so the
-     * neighbouring Patreon link is never touched. */
-    function rebrandAbout() {
-        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    /* _Settings.cshtml:374, inside the Settings tab. Text node only, so the
+     * neighbouring Patreon link is never touched. Upstream fetches that partial
+     * after the page has loaded (garage.js:22 `loadSettings`), so this also runs
+     * whenever the Settings pane (Home/Index.cshtml:167) is filled; on page load
+     * alone it never found the sentence. */
+    function rebrandAbout(root) {
+        var walker = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT);
         var node;
         while ((node = walker.nextNode())) {
             if (node.nodeValue.indexOf('LubeLogger utilizes open-source') !== -1) {
@@ -1009,9 +1012,19 @@
         document.body.appendChild(wrap);
     }
 
+    function watchSettingsPane() {
+        var pane = document.getElementById('settings-tab-pane');
+        if (!pane || typeof MutationObserver !== 'function') return;
+        /* childList only: the rewrite edits a text node's value, which is not
+           a childList change, so it cannot retrigger this observer. */
+        new MutationObserver(function () { rebrandAbout(pane); })
+            .observe(pane, { childList: true, subtree: true });
+    }
+
     function onReady() {
         inject();
         rebrandAbout();
+        watchSettingsPane();
         installVehicleDashboard();
         watchVehicleModal();
         addReceiptButton();
