@@ -257,7 +257,7 @@ button.swal2-styled.swal2-confirm {
     object-fit: cover;
     /* Slower than the lift: the card should feel like it moves and the
        photograph like it breathes, not both snapping together. */
-    transition: transform .6s cubic-bezier(.2, .7, .3, 1);
+    transition: transform .6s cubic-bezier(.2, .7, .3, 1), opacity .3s ease;
 }
 
 /* The scrim. Weighted to the bottom third so the text has something to sit

@@ -1021,10 +1021,48 @@
             .observe(pane, { childList: true, subtree: true });
     }
 
+    /* Optimize garage poster images.
+     * The garage is fetched via AJAX and injected into #garageContainer.
+     * Raw uploads can be full resolution (1–2 MB). Adding loading="lazy"
+     * and decoding="async" prevents saturating bandwidth and main-thread decode
+     * on initial garage load, and an error handler gracefully hides broken images. */
+    function optimizeGarageImages(root) {
+        var container = root || document.getElementById('garageContainer');
+        if (!container) return;
+        var images = container.querySelectorAll('.garage-item .card > img');
+        for (var i = 0; i < images.length; i++) {
+            var img = images[i];
+            if (!img.getAttribute('loading')) {
+                img.setAttribute('loading', 'lazy');
+            }
+            if (!img.getAttribute('decoding')) {
+                img.setAttribute('decoding', 'async');
+            }
+            if (!img.dataset.rtImgBound) {
+                img.dataset.rtImgBound = 'true';
+                img.addEventListener('error', function () {
+                    this.style.opacity = '0';
+                });
+            }
+        }
+    }
+
+    function watchGarage() {
+        var container = document.getElementById('garageContainer');
+        if (!container && isLandingPage()) {
+            container = document.body;
+        }
+        if (!container || typeof MutationObserver !== 'function') return;
+        optimizeGarageImages(container);
+        new MutationObserver(function () { optimizeGarageImages(container); })
+            .observe(container, { childList: true, subtree: true });
+    }
+
     function onReady() {
         inject();
         rebrandAbout();
         watchSettingsPane();
+        watchGarage();
         installVehicleDashboard();
         watchVehicleModal();
         addReceiptButton();

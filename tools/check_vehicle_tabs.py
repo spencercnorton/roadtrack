@@ -32,7 +32,22 @@ import asyncio, json, os, subprocess, tempfile, time, urllib.request
 import websockets
 
 PREVIEW = "http://127.0.0.1:8909/Vehicle/Index?vehicleId=1"
-CHROME = os.environ.get('CHROME', 'google-chrome')
+
+
+def find_chrome():
+    if 'CHROME' in os.environ:
+        return os.environ['CHROME']
+    import shutil
+    found = shutil.which('google-chrome') or shutil.which('chromium') or shutil.which('chromium-browser')
+    if found:
+        return found
+    mac_chrome = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    if os.path.exists(mac_chrome):
+        return mac_chrome
+    return 'google-chrome'
+
+
+CHROME = find_chrome()
 
 
 async def main():

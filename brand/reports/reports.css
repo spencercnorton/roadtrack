@@ -256,6 +256,7 @@
     /* Never leave a section heading stranded at the foot of a page. */
     .rt-rep-h3 { page-break-after: avoid; break-after: avoid; }
     .rt-rep-head { page-break-after: avoid; break-after: avoid; }
+    .rt-rep-summary { page-break-inside: avoid; break-inside: avoid; }
 
     @page { margin: 14mm; }
 }
