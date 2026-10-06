@@ -20,7 +20,7 @@ import {
     valueByMonth, round2, CPD_WARMUP, LOAN_FIELDS, VALUATION_FIELD,
     depreciationCurve, RESIDUAL_FLOOR, FLEET_RETENTION_5Y,
 } from '../brand/metrics/aggregate.js';
-import { money, moneyAxis, moneyPrecise } from '../brand/metrics/chart-kit.js';
+import { fmt, money, moneyAxis, moneyPrecise } from '../brand/metrics/chart-kit.js';
 
 let passed = 0;
 const check = (name, fn) => { fn(); passed++; console.log(`  ok  ${name}`); };
@@ -1885,6 +1885,22 @@ check('moneyPrecise formats 3-digit precision with proper sign', () => {
     assert.equal(moneyPrecise(-0.5), '-$0.500');
     assert.equal(moneyPrecise(0), '$0.000');
     assert.equal(moneyPrecise(null), '—');
+});
+
+check('a negative that rounds to zero carries no sign in a comma-decimal locale', () => {
+    // The zero test once compared against a "0.00" literal, so German output
+    // ("0,00") failed it and -0.001 printed as "-€0,00".
+    const saved = { ...fmt };
+    try {
+        fmt.locale = 'de-DE';
+        fmt.symbol = '€';
+        assert.equal(money(-0.001), '€0,00');
+        assert.equal(moneyPrecise(-0.0001), '€0,000');
+        assert.equal(moneyAxis(-0.01), '€0');
+        assert.equal(money(-1234.5), '-€1.234,50');
+    } finally {
+        Object.assign(fmt, saved);
+    }
 });
 
 console.log(`\n${passed} checks passed.`);
