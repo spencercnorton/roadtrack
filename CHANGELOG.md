@@ -5,12 +5,17 @@ Every release's entry here is also its GitHub Release notes. Versions follow
 
 ## Unreleased
 
+## 2.1.1 — 2026-10-06
+
+Still built on LubeLogger v1.7.3; nothing to do but pull the new image.
+
 ### Changed
 
 - Garage posters below the fold download when they are scrolled to rather than
   with the page, which matters on a phone with a large garage. A poster whose
   photo file is missing shows the card's background instead of a broken-image
   icon.
+- A printed report keeps its summary figures together on one page.
 
 ### Fixed
 
