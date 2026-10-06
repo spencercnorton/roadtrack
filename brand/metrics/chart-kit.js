@@ -49,24 +49,33 @@ export const fmt = {
 
 export function money(n, compact = false) {
     if (n === null || !Number.isFinite(n)) return '—';
-    const opts = compact && Math.abs(n) >= 10000
+    const abs = Math.abs(n);
+    const opts = compact && abs >= 10000
         ? { notation: 'compact', maximumFractionDigits: 1 }
         : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-    return fmt.symbol + new Intl.NumberFormat(fmt.locale, opts).format(n);
+    const formatted = new Intl.NumberFormat(fmt.locale, opts).format(abs);
+    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
+    return sign + fmt.symbol + formatted;
 }
 
 /* Axis ticks are always compact, so one axis never mixes "$5,000.00" with
  * "$40K". Whole units only — the cents belong in the tooltip and the table. */
 export function moneyAxis(n) {
     if (!Number.isFinite(n)) return '';
-    return fmt.symbol + new Intl.NumberFormat(fmt.locale,
-        { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+    const abs = Math.abs(n);
+    const formatted = new Intl.NumberFormat(fmt.locale,
+        { notation: 'compact', maximumFractionDigits: 1 }).format(abs);
+    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
+    return sign + fmt.symbol + formatted;
 }
 
 export function moneyPrecise(n) {
     if (n === null || !Number.isFinite(n)) return '—';
-    return fmt.symbol + new Intl.NumberFormat(fmt.locale,
-        { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(n);
+    const abs = Math.abs(n);
+    const formatted = new Intl.NumberFormat(fmt.locale,
+        { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(abs);
+    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
+    return sign + fmt.symbol + formatted;
 }
 
 /* "km" does not take an -s. Naive pluralisation renders "12,000 kms of

@@ -20,6 +20,7 @@ import {
     valueByMonth, round2, CPD_WARMUP, LOAN_FIELDS, VALUATION_FIELD,
     depreciationCurve, RESIDUAL_FLOOR, FLEET_RETENTION_5Y,
 } from '../brand/metrics/aggregate.js';
+import { money, moneyAxis, moneyPrecise } from '../brand/metrics/chart-kit.js';
 
 let passed = 0;
 const check = (name, fn) => { fn(); passed++; console.log(`  ok  ${name}`); };
@@ -1859,6 +1860,31 @@ check('without a curve the value line holds flat, exactly as it used to', () => 
     const points = valuationsOf(vehicleWith({ [VALUATION_FIELD]: '2022-04 = 10000' }));
     assert.equal(valueAt(points, parseIsoDate('2030-01-01')), 10000);
     assert.equal(valueByMonth(points, ['2030-01'])[0], 10000);
+});
+
+check('money formats positive, negative and zero amounts with correct sign placement', () => {
+    assert.equal(money(50), '$50.00');
+    assert.equal(money(-50), '-$50.00');
+    assert.equal(money(-15000, true), '-$15K');
+    assert.equal(money(0), '$0.00');
+    assert.equal(money(-0.0001), '$0.00');
+    assert.equal(money(null), '—');
+    assert.equal(money(Infinity), '—');
+});
+
+check('moneyAxis formats compact positive and negative values correctly', () => {
+    assert.equal(moneyAxis(5000), '$5K');
+    assert.equal(moneyAxis(-15000), '-$15K');
+    assert.equal(moneyAxis(0), '$0');
+    assert.equal(moneyAxis(-0.01), '$0');
+    assert.equal(moneyAxis(NaN), '');
+});
+
+check('moneyPrecise formats 3-digit precision with proper sign', () => {
+    assert.equal(moneyPrecise(0.125), '$0.125');
+    assert.equal(moneyPrecise(-0.5), '-$0.500');
+    assert.equal(moneyPrecise(0), '$0.000');
+    assert.equal(moneyPrecise(null), '—');
 });
 
 console.log(`\n${passed} checks passed.`);
