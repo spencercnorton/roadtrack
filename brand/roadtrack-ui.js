@@ -1021,48 +1021,68 @@
             .observe(pane, { childList: true, subtree: true });
     }
 
-    /* Optimize garage poster images.
-     * The garage is fetched via AJAX and injected into #garageContainer.
-     * Raw uploads can be full resolution (1–2 MB). Adding loading="lazy"
-     * and decoding="async" prevents saturating bandwidth and main-thread decode
-     * on initial garage load, and an error handler gracefully hides broken images. */
-    function optimizeGarageImages(root) {
-        var container = root || document.getElementById('garageContainer');
-        if (!container) return;
-        var images = container.querySelectorAll('.garage-item .card > img');
-        for (var i = 0; i < images.length; i++) {
-            var img = images[i];
-            if (!img.getAttribute('loading')) {
-                img.setAttribute('loading', 'lazy');
+    /* ── Garage posters load as they scroll into view ───────────────────
+     *
+     * Every poster is the vehicle's photo as uploaded, often a full-size
+     * camera image behind a tile a few hundred pixels wide. Nothing in the
+     * layer can serve a smaller copy: photos sit behind the app's sign-in,
+     * and a resized copy under /brand/ would be public. What it can do is
+     * stop the posters below the fold downloading before anyone scrolls.
+     *
+     * THE ATTRIBUTE HAS TO BE IN THE MARKUP. garage.js:17 `loadGarage()`
+     * inserts the /Home/Garage partial with `$("#garage-tab-pane").html(data)`,
+     * and the browser decides to fetch an <img> as it is inserted. Setting
+     * loading="lazy" afterwards, from a MutationObserver, changes the
+     * attribute and nothing else: the fetch has already started (measured on
+     * a 1.7.3 container — an offscreen poster patched that way was fetched,
+     * the same poster with the attribute in its markup was not). So the
+     * attribute goes into the HTML string, through jQuery's htmlPrefilter,
+     * which both the innerHTML and the append path of `.html()` call.
+     *
+     * Scoped to strings that are a garage partial, so no other image in the
+     * app changes how it loads. The partial is upstream's own Razor output,
+     * where a `>` inside an attribute arrives encoded, so the lookahead stays
+     * inside one tag. Lazy costs these posters nothing in first paint: they
+     * arrive by AJAX, so the preload scanner never saw them anyway. */
+    function lazyGaragePosters() {
+        var $ = window.jQuery;
+        if (!$ || typeof $.htmlPrefilter !== 'function' || $.htmlPrefilter.rtGarage) return;
+        var upstream = $.htmlPrefilter;
+        var prefilter = function (html) {
+            html = upstream.call(this, html);
+            if (typeof html === 'string' && html.indexOf('garage-item') !== -1) {
+                html = html.replace(/<img\b(?![^>]*\sloading=)/gi,
+                                    '<img loading="lazy" decoding="async"');
             }
-            if (!img.getAttribute('decoding')) {
-                img.setAttribute('decoding', 'async');
-            }
-            if (!img.dataset.rtImgBound) {
-                img.dataset.rtImgBound = 'true';
-                img.addEventListener('error', function () {
-                    this.style.opacity = '0';
-                });
-            }
-        }
+            return html;
+        };
+        prefilter.rtGarage = true;
+        $.htmlPrefilter = prefilter;
     }
 
-    function watchGarage() {
-        var container = document.getElementById('garageContainer');
-        if (!container && isLandingPage()) {
-            container = document.body;
-        }
-        if (!container || typeof MutationObserver !== 'function') return;
-        optimizeGarageImages(container);
-        new MutationObserver(function () { optimizeGarageImages(container); })
-            .observe(container, { childList: true, subtree: true });
+    /* A photo whose file has gone (a restored backup without its images, say)
+     * would draw the browser's broken-image glyph across the poster. Hide it
+     * and let the card's dark background and the caption carry the tile.
+     * `error` does not bubble, hence the capture listener; one listener for
+     * every garage load rather than one per image. */
+    function hideBrokenPosters() {
+        document.addEventListener('error', function (e) {
+            var img = e.target;
+            if (img && img.tagName === 'IMG'
+                && img.matches('#garageContainer .garage-item .card > img')) {
+                img.style.opacity = '0';
+            }
+        }, true);
     }
 
     function onReady() {
         inject();
         rebrandAbout();
         watchSettingsPane();
-        watchGarage();
+        if (isLandingPage()) {
+            lazyGaragePosters();
+            hideBrokenPosters();
+        }
         installVehicleDashboard();
         watchVehicleModal();
         addReceiptButton();

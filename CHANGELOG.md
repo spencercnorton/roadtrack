@@ -5,6 +5,13 @@ Every release's entry here is also its GitHub Release notes. Versions follow
 
 ## Unreleased
 
+### Changed
+
+- Garage posters below the fold download when they are scrolled to rather than
+  with the page, which matters on a phone with a large garage. A poster whose
+  photo file is missing shows the card's background instead of a broken-image
+  icon.
+
 ## 2.1.0 — 2026-10-02
 
 Built on LubeLogger v1.7.3 (was v1.7.0). Back up `/App/data` first: going back
