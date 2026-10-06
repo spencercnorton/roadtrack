@@ -47,35 +47,36 @@ export const fmt = {
     distance: 'mile',
 };
 
+/* The sign goes before the symbol ("-$50.00", never "$-50.00"), because the
+ * symbol is prefixed by hand rather than through Intl's currency style (see
+ * above). The magnitude is formatted on its own, and the sign is only drawn
+ * when that magnitude does not round to the locale's zero: -0.001 is "$0.00",
+ * not "-$0.00". Compared against Intl's own zero rather than a "0.00" literal,
+ * which a German locale writes "0,00". */
+function signed(n, opts) {
+    const nf = new Intl.NumberFormat(fmt.locale, opts);
+    const formatted = nf.format(Math.abs(n));
+    const sign = n < 0 && formatted !== nf.format(0) ? '-' : '';
+    return sign + fmt.symbol + formatted;
+}
+
 export function money(n, compact = false) {
     if (n === null || !Number.isFinite(n)) return '—';
-    const abs = Math.abs(n);
-    const opts = compact && abs >= 10000
+    return signed(n, compact && Math.abs(n) >= 10000
         ? { notation: 'compact', maximumFractionDigits: 1 }
-        : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-    const formatted = new Intl.NumberFormat(fmt.locale, opts).format(abs);
-    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
-    return sign + fmt.symbol + formatted;
+        : { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 /* Axis ticks are always compact, so one axis never mixes "$5,000.00" with
  * "$40K". Whole units only — the cents belong in the tooltip and the table. */
 export function moneyAxis(n) {
     if (!Number.isFinite(n)) return '';
-    const abs = Math.abs(n);
-    const formatted = new Intl.NumberFormat(fmt.locale,
-        { notation: 'compact', maximumFractionDigits: 1 }).format(abs);
-    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
-    return sign + fmt.symbol + formatted;
+    return signed(n, { notation: 'compact', maximumFractionDigits: 1 });
 }
 
 export function moneyPrecise(n) {
     if (n === null || !Number.isFinite(n)) return '—';
-    const abs = Math.abs(n);
-    const formatted = new Intl.NumberFormat(fmt.locale,
-        { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(abs);
-    const sign = (n < 0 && !/^0(?:\.0+)?$/.test(formatted)) ? '-' : '';
-    return sign + fmt.symbol + formatted;
+    return signed(n, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 }
 
 /* "km" does not take an -s. Naive pluralisation renders "12,000 kms of

@@ -12,6 +12,11 @@ Every release's entry here is also its GitHub Release notes. Versions follow
   photo file is missing shows the card's background instead of a broken-image
   icon.
 
+### Fixed
+
+- Negative amounts read `-$50.00` rather than `$-50.00`, and an amount that
+  rounds to zero never shows a minus sign, in any locale.
+
 ## 2.1.0 — 2026-10-02
 
 Built on LubeLogger v1.7.3 (was v1.7.0). Back up `/App/data` first: going back
